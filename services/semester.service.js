@@ -56,11 +56,16 @@ const methods = {
             ];
         query["order"] = $order;
 
-        query["include"] = [{ all: true, required: false }];
+        // query["include"] = [{ all: true, required: false }];
 
-        if (!isNaN(limit)) query["limit"] = limit;
+        // if (!isNaN(limit)) query["limit"] = limit;
 
-        if (!isNaN(offset)) query["offset"] = offset;
+        // if (!isNaN(offset)) query["offset"] = offset;
+
+        query["include"] = [];
+        if (req.query.includeAll) {
+            query["include"].unshift({ all: true, required: false });
+         }
 
         return { query: query };
     },
@@ -69,23 +74,30 @@ const methods = {
         const limit = +(req.query.size || config.pageLimit);
         const offset = +(limit * ((req.query.page || 1) - 1));
         const _q = methods.scopeSearch(req, limit, offset);
+        const _qLimit = {..._q};
+
+        if (!isNaN(limit)) _qLimit.query["limit"] = limit;
+        if (!isNaN(offset)) _qLimit.query["offset"] = offset;
 
         return new Promise(async (resolve, reject) => {
             try {
-                Promise.all([db.findAll(_q.query)])
-                    .then((result) => {
-                        let rows = result[0],
-                            count = rows.length;
-                        resolve({
-                            total: count,
-                            lastPage: Math.ceil(count / limit),
-                            currPage: +req.query.page || 1,
-                            rows: rows,
-                        });
-                    })
-                    .catch((error) => {
-                        reject(error);
+                Promise.all([
+                    db.findAll(_qLimit.query),
+                    db.count(_q.query),
+                  ])
+                  .then((result) => {
+                    let rows = result[0];
+
+                    resolve({
+                      total: result[1],
+                      lastPage: Math.ceil(result[1] / limit),
+                      currPage: +req.query.page || 1,
+                      rows: rows,
                     });
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
             } catch (error) {
                 reject(error);
             }

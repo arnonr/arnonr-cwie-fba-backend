@@ -79,7 +79,6 @@ const methods = {
 
     return new Promise(async (resolve, reject) => {
       try {
-
         Promise.all([
           db.findAll(_qLimit.query),
           db.count(_q.query),

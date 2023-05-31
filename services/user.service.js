@@ -61,11 +61,16 @@ const methods = {
       ];
     query["order"] = $order;
 
-    query["include"] = [{ all: true, required: false }];
+    // query["include"] = [{ all: true, required: false }];
 
-    if (!isNaN(limit)) query["limit"] = limit;
+    // if (!isNaN(limit)) query["limit"] = limit;
 
-    if (!isNaN(offset)) query["offset"] = offset;
+    // if (!isNaN(offset)) query["offset"] = offset;
+
+    query["include"] = [];
+    if (req.query.includeAll) {
+      query["include"].unshift({ all: true, required: false });
+    }
 
     return { query: query };
   },
@@ -74,23 +79,30 @@ const methods = {
     const limit = +(req.query.size || config.pageLimit);
     const offset = +(limit * ((req.query.page || 1) - 1));
     const _q = methods.scopeSearch(req, limit, offset);
+    const _qLimit = {..._q};
+
+    if (!isNaN(limit)) _qLimit.query["limit"] = limit;
+    if (!isNaN(offset)) _qLimit.query["offset"] = offset;
+
     return new Promise(async (resolve, reject) => {
       try {
-        Promise.all([db.findAll(_q.query), db.count(_q.query)])
-          .then((result) => {
-            let rows = result[0],
-              count = rows.length;
+        Promise.all([
+          db.findAll(_qLimit.query),
+          db.count(_q.query),
+        ])
+        .then((result) => {
+          let rows = result[0];
 
-            resolve({
-              total: count,
-              lastPage: Math.ceil(count / limit),
-              currPage: +req.query.page || 1,
-              rows: rows,
-            });
-          })
-          .catch((error) => {
-            reject(error);
+          resolve({
+            total: result[1],
+            lastPage: Math.ceil(result[1] / limit),
+            currPage: +req.query.page || 1,
+            rows: rows,
           });
+        })
+        .catch((error) => {
+          reject(error);
+        });
       } catch (error) {
         reject(error);
       }
@@ -301,7 +313,7 @@ const methods = {
 
             }
 
-          }else{ /* มีข้อมูลในตาราง User แล้ว (เจ้าหน้าที่คณะ) */
+          }else{ /* มีข้อมูลในตาราง User แล้ว (เจ้าหน้าที่คณะ) หรือ อาจารย์ */
               let updateData = {
                 name: loginObj.userInfo.displayname,
                 citizen_id: loginObj.userInfo.pid,
