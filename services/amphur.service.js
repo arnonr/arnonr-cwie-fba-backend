@@ -73,11 +73,15 @@ const methods = {
 
     const _q = methods.scopeSearch(req, limit, offset);
 
+    const _qLimit = {..._q};
+    if (!isNaN(limit)) _qLimit.query["limit"] = limit;
+    if (!isNaN(offset)) _qLimit.query["offset"] = offset;
+
     return new Promise(async (resolve, reject) => {
       try {
 
         Promise.all([
-          db.findAll({ ..._q.query, limit: limit, offset: offset }),
+          db.findAll(_qLimit.query),
           db.count(_q.query),
         ])
           .then((result) => {
