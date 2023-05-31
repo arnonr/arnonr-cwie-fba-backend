@@ -72,8 +72,8 @@ const methods = {
     const offset = +(limit * ((req.query.page || 1) - 1));
 
     const _q = methods.scopeSearch(req, limit, offset);
-
     const _qLimit = {..._q};
+
     if (!isNaN(limit)) _qLimit.query["limit"] = limit;
     if (!isNaN(offset)) _qLimit.query["offset"] = offset;
 
