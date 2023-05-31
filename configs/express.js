@@ -19,19 +19,26 @@ module.exports = async (app) => {
     "http://localhost:8088",
     "http://178.128.216.177:8088"
   ];
-  const corsOptions = {
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not " +
-          "allow access from the specified Origin.";
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-  };
-  app.use(cors(corsOptions));
+  // const corsOptions = {
+  //   origin: function (origin, callback) {
+  //     if (!origin) return callback(null, true);
+  //     if (allowedOrigins.indexOf(origin) === -1) {
+  //       const msg =
+  //         "The CORS policy for this site does not " +
+  //         "allow access from the specified Origin.";
+  //       return callback(new Error(msg), false);
+  //     }
+  //     return callback(null, true);
+  //   },
+  // };
+  // app.use(cors(corsOptions));
+
+  app.use(
+    cors({
+      origin: "*",
+    })
+  );
+
 
   // for parsing multipart/form-data
   // const multer = require('multer');
