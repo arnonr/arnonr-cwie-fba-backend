@@ -63,14 +63,14 @@ router.get(
 router.post(
     "/",
     auth.required,
-    upload.single('namecard_file_upload'),
+    upload.fields([{name: "namecard_file_upload", maxCount: 1 }, {name: "map_file_upload", maxCount: 1 }]),
     controllers.onInsert,
 );
 
 router.put(
     "/:id",
     auth.required,
-    upload.single('namecard_file_upload'),
+    upload.fields([{name: "namecard_file_upload", maxCount: 1 }, {name: "map_file_upload", maxCount: 1 }]),
     controllers.onUpdate
 );
 

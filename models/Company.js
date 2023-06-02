@@ -65,6 +65,11 @@ Company.init(
             allowNull: true,
             comment: "ไฟล์นามบัตร",
         },
+        map_file: {
+            type: DataTypes.STRING(100),
+            allowNull: true,
+            comment: "ไฟล์แผนที่",
+        },
         address: {
             type: DataTypes.STRING(255),
             allowNull: true,

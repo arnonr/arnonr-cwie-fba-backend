@@ -25,8 +25,14 @@ const methods = {
         try {
             const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
 
-            if (typeof(req.file) != "undefined"){
-                req.body.namecard_file = upload_folder + req.file.filename;
+            if(typeof(req.files) != "undefined"){
+                if (typeof(req.files['namecard_file_upload']) != "undefined"){
+                    req.body.namecard_file = upload_folder + req.files['namecard_file_upload'][0].filename;
+                }
+
+                if (typeof(req.files['map_file_upload']) != "undefined"){
+                    req.body.map_file = upload_folder + req.files['map_file_upload'][0].filename;
+                }
             }
 
             req.body.created_by = decoded.user_id;
@@ -42,8 +48,18 @@ const methods = {
         try {
             const decoded = jwt.decode(req.headers.authorization.split(" ")[1]);
 
-            if (typeof(req.file) != "undefined"){
-                req.body.namecard_file = upload_folder + req.file.filename;
+            // if (typeof(req.file) != "undefined"){
+            //     req.body.namecard_file = upload_folder + req.file.filename;
+            // }
+
+            if(typeof(req.files) != "undefined"){
+                if (typeof(req.files['namecard_file_upload']) != "undefined"){
+                    req.body.namecard_file = upload_folder + req.files['namecard_file_upload'][0].filename;
+                }
+
+                if (typeof(req.files['map_file_upload']) != "undefined"){
+                    req.body.map_file = upload_folder + req.files['map_file_upload'][0].filename;
+                }
             }
 
             req.body.updated_by = decoded.id;
